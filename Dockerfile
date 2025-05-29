@@ -1,18 +1,16 @@
-# 1단계: 빌드용 이미지
 FROM gradle:8.2.1-jdk17 AS build
 
-USER root                             #  root 권한 사용
-WORKDIR /app
-COPY . .
+# 기본 사용자 gradle 사용 (root 권한 없음)
+WORKDIR /home/gradle/app
+COPY --chown=gradle:gradle . .
 
-#  Gradle 캐시를 프로젝트 디렉토리로 지정 (권한 문제 우회)
-ENV GRADLE_USER_HOME=/app/.gradle
+# 캐시 경로를 현재 사용자 디렉토리 안으로 명시
+ENV GRADLE_USER_HOME=/home/gradle/app/.gradle
 
-RUN gradle build --no-daemon -x test
+RUN ./gradlew build --no-daemon -x test
 
-# 2단계: 실행용 이미지
 FROM eclipse-temurin:17-jre
 WORKDIR /app
-COPY --from=build /app/build/libs/*.jar app.jar
+COPY --from=build /home/gradle/app/build/libs/*.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
