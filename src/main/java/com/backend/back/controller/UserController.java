@@ -25,8 +25,8 @@ public class UserController {
 
     @ResponseBody
     @PostMapping("/answer")
-    public Object answer(@RequestParam("message") String message) {
-        userMapper.testmessage(message);
+    public Object answer(@RequestBody HashMap<String, Object> message) {
+        userMapper.testmessage(message.get("message").toString());
         return message;
     }
 }
