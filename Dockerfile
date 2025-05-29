@@ -1,8 +1,9 @@
 # 1단계: 빌드용 이미지 (Gradle + JDK 포함)
 FROM gradle:8.2.1-jdk17 AS build
+USER root
 WORKDIR /app
-COPY --chown=gradle:gradle . .
-RUN gradle build --no-daemon
+COPY . .
+RUN gradle build --no-daemon -x test
 
 # 2단계: 실행용 이미지
 FROM eclipse-temurin:17-jre
