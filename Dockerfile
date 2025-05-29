@@ -1,8 +1,13 @@
-# 1단계: 빌드용 이미지 (Gradle + JDK 포함)
+# 1단계: 빌드용 이미지
 FROM gradle:8.2.1-jdk17 AS build
-USER root
+
+USER root                             #  root 권한 사용
 WORKDIR /app
 COPY . .
+
+#  Gradle 캐시를 프로젝트 디렉토리로 지정 (권한 문제 우회)
+ENV GRADLE_USER_HOME=/app/.gradle
+
 RUN gradle build --no-daemon -x test
 
 # 2단계: 실행용 이미지
