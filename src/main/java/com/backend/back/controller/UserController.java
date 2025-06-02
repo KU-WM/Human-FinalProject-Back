@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
+import java.util.List;
 
 
 @Controller
@@ -34,6 +35,12 @@ public class UserController {
     public Object answer(@RequestBody HashMap<String, Object> message) {
         userMapper.testmessage(message.get("message").toString());
         return message;
+    }
+
+    @ResponseBody
+    @GetMapping("/images")
+    public List<ImageDTO> images() {
+        return userMapper.getImages();
     }
 
     @ResponseBody
