@@ -12,4 +12,7 @@ public class GeminiProperties {
     private String apiTextUrl;
     private String apiImageUrl;
     private String apiBaseUrl;
+    private String gemma3ChatUrl;
+    private String gemma3Api;
+    private String gemma3Url;
 }

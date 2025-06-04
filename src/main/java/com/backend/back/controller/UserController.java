@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 
@@ -92,5 +94,48 @@ public class UserController {
                         return inlineData.get("data");
                     });
                 });
+    }
+
+    @ResponseBody
+    @PostMapping("/chat")
+    public Mono<Object> chatting(@RequestBody HashMap<String, Object> message) {
+        JSONParser parser = new JSONParser();
+        ImageDTO imageDTO = new ImageDTO();
+        imageDTO.setUserInput(message.get("message").toString());
+
+        return imageService.getChat(message.get("message").toString())
+                .map(response -> {
+                    JSONObject output = null;
+
+                    try {
+                        output = (JSONObject) parser.parse(response);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    JSONArray candidates = (JSONArray) output.get("candidates");
+                    JSONObject candidate = (JSONObject) candidates.get(0);
+                    JSONObject content = (JSONObject) candidate.get("content");
+                    JSONArray parts = (JSONArray) content.get("parts");
+                    JSONObject part = (JSONObject) parts.get(0);
+                    String modelOutput = part.get("text").toString();
+
+                    userMapper.updateDialogue(message.get("message").toString(), modelOutput);
+
+                    return modelOutput;
+                });
+    }
+
+    @ResponseBody
+    @GetMapping("/chatlog")
+    public String logs() {
+        String logfile = userMapper.loadDialogue(1);
+
+        if (logfile == null) {
+            logfile = "{\"dialogues\": []}";
+            userMapper.saveDialogue(logfile);
+        }
+
+        return logfile;
     }
 }
