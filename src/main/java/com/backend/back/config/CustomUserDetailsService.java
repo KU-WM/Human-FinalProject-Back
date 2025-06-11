@@ -23,7 +23,7 @@ public class CustomUserDetailsService implements org.springframework.security.co
 //        System.out.println("\n\n\n" + member + "\n\n\n");
 
         if(member == null) {
-            new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + userId);
+            throw new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + userId);
         }
 
         return org.springframework.security.core.userdetails.User.builder()
