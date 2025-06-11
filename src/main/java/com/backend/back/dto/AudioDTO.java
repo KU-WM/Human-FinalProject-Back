@@ -5,7 +5,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class ImageDTO {
+public class AudioDTO {
     private int id;
     private String userInput;
     private String prompt;

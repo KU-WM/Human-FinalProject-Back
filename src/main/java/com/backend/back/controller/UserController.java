@@ -1,20 +1,17 @@
 package com.backend.back.controller;
 
-import com.backend.back.dto.ImageDTO;
+import com.backend.back.dto.UserDTO;
 import com.backend.back.mapper.UserMapper;
-import com.backend.back.service.ImageService;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Mono;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.HashMap;
-import java.util.List;
 
 
 @Controller
@@ -25,117 +22,40 @@ public class UserController {
     UserMapper userMapper;
 
     @Autowired
-    ImageService imageService;
+    PasswordEncoder passwordEncoder;
 
-    @GetMapping("/login")
-    public void login() {
+    @PostMapping("/check")
+    public boolean checkId(@RequestBody String userId) {
 
+        return userMapper.findByUserId(userId) == null;
     }
 
-    @ResponseBody
-    @PostMapping("/answer")
-    public Object answer(@RequestBody HashMap<String, Object> message) {
-        userMapper.testmessage(message.get("message").toString());
-        return message;
+    @PostMapping("/register")
+    public ResponseEntity<String> register(@RequestBody HashMap<String, Object> userInfo) {
+        UserDTO user = new UserDTO();
+
+        String  encodedPassword = passwordEncoder.encode(userInfo.get("userPw").toString());
+
+        user.setUserId(userInfo.get("userId").toString());
+        user.setNickName(userInfo.get("nickName").toString());
+        user.setUserPw(encodedPassword);
+
+        userMapper.register(user);
+
+        return ResponseEntity.ok().body("회원 가입 성공!");
     }
 
-    @ResponseBody
-    @GetMapping("/images")
-    public List<ImageDTO> images() {
-        return userMapper.getImages();
-    }
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        ResponseCookie expiredCookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .sameSite("None")
+                .maxAge(0) // 즉시 만료
+                .build();
 
-    @ResponseBody
-    @PostMapping("/generate")
-    public Mono<Object> generator(@RequestBody HashMap<String, Object> message) {
-        JSONParser parser = new JSONParser();
-        ImageDTO imageDTO = new ImageDTO();
-        imageDTO.setUserInput(message.get("message").toString());
-
-        return imageService.generatePrompt(message.get("message").toString())
-                .map(response -> {
-                    JSONObject output = null;
-
-                    try {
-                        output = (JSONObject) parser.parse(response);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    JSONArray candidates = (JSONArray) output.get("candidates");
-                    JSONObject candidate = (JSONObject) candidates.get(0);
-                    JSONObject content = (JSONObject) candidate.get("content");
-                    JSONArray parts = (JSONArray) content.get("parts");
-                    JSONObject part = (JSONObject) parts.get(0);
-
-                    return part.get("text").toString();
-                })
-                .flatMap(prompt -> {
-                    return imageService.generateImage(prompt).map(response -> {
-                        imageDTO.setPrompt(prompt);
-                        JSONObject output = null;
-
-                        try {
-                            output = (JSONObject) parser.parse(response);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
-                        JSONArray candidates = (JSONArray) output.get("candidates");
-                        JSONObject candidate = (JSONObject) candidates.get(0);
-                        JSONObject content = (JSONObject) candidate.get("content");
-                        JSONArray parts = (JSONArray) content.get("parts");
-                        JSONObject part = (JSONObject) parts.get(1);
-                        JSONObject inlineData = (JSONObject) part.get("inlineData");
-                        imageDTO.setImage(inlineData.get("data").toString());
-
-                        userMapper.saveImage(imageDTO);
-
-                        return inlineData.get("data");
-                    });
-                });
-    }
-
-    @ResponseBody
-    @PostMapping("/chat")
-    public Mono<Object> chatting(@RequestBody HashMap<String, Object> message) {
-        JSONParser parser = new JSONParser();
-        ImageDTO imageDTO = new ImageDTO();
-        imageDTO.setUserInput(message.get("message").toString());
-
-        return imageService.getChat(message.get("message").toString())
-                .map(response -> {
-                    JSONObject output = null;
-
-                    try {
-                        output = (JSONObject) parser.parse(response);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    JSONArray candidates = (JSONArray) output.get("candidates");
-                    JSONObject candidate = (JSONObject) candidates.get(0);
-                    JSONObject content = (JSONObject) candidate.get("content");
-                    JSONArray parts = (JSONArray) content.get("parts");
-                    JSONObject part = (JSONObject) parts.get(0);
-                    String modelOutput = part.get("text").toString();
-
-                    userMapper.updateDialogue(message.get("message").toString(), modelOutput);
-
-                    return modelOutput;
-                });
-    }
-
-    @ResponseBody
-    @GetMapping("/chatlog")
-    public String logs() {
-        String logfile = userMapper.loadDialogue(1);
-
-        if (logfile == null) {
-            logfile = "{\"dialogues\": []}";
-            userMapper.saveDialogue(logfile);
-        }
-
-        return logfile;
+        response.setHeader(HttpHeaders.SET_COOKIE, expiredCookie.toString());
+        return ResponseEntity.ok().build();
     }
 }

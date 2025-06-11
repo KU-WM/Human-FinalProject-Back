@@ -1,15 +1,11 @@
 package com.backend.back.service;
 
-import com.backend.back.config.GeminiProperties;
-import com.backend.back.mapper.UserMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.backend.back.properties.GeminiProperties;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -19,9 +15,6 @@ public class ImageService {
 
     private final GeminiProperties properties;
     private final WebClient webClient;
-
-    @Autowired
-    private UserMapper userMapper;
 
     public ImageService(GeminiProperties properties) {
         this.properties = properties;
@@ -66,37 +59,6 @@ public class ImageService {
                 .uri(uri)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(body)
-                .retrieve()
-                .bodyToMono(String.class);
-    }
-
-
-    public Mono<String> getChat(String prompt) {
-        String uri = properties.getGemma3ChatUrl() + properties.getApiKey();
-
-        String logfile = userMapper.loadDialogue(1);
-        if (logfile == null) {
-            logfile = "{\"dialogues\": []}";
-            userMapper.saveDialogue(logfile);
-        }
-
-        String base64Encoded = Base64.getEncoder().encodeToString(logfile.getBytes(StandardCharsets.UTF_8));
-
-        Map<String, Object> part = Map.of("text", prompt);
-
-        Map<String, Object> inline_data = Map.of("mime_type", "application/json", "data", base64Encoded);
-
-        Map<String, Object> part2 = Map.of("file_data", inline_data);
-
-        Map<String, Object> parts = Map.of("parts", List.of(part, part2));
-        Map<String, Object> contents = Map.of("contents", List.of(parts));
-
-
-        return webClient.post()
-                .uri(uri)
-                .header("Authorization", "Bearer " + properties.getGemma3Api())
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(contents)
                 .retrieve()
                 .bodyToMono(String.class);
     }
