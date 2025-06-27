@@ -32,6 +32,7 @@ public class FileController {
         UrlResource resource = new UrlResource(path.toUri());
 
         return ResponseEntity.ok()
+                .contentLength(Files.size(path)) // 이 줄 추가!
                 .contentType(MediaType.parseMediaType("audio/wav"))
                 .body(resource);
     }
@@ -46,6 +47,7 @@ public class FileController {
         UrlResource resource = new UrlResource(path.toUri());
 
         return ResponseEntity.ok()
+                .contentLength(Files.size(path)) // 이 줄 추가!
                 .contentType(MediaType.parseMediaType("image/png"))
                 .body(resource);
     }
