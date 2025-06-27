@@ -1,6 +1,5 @@
 package com.backend.back.mapper;
 
-import com.backend.back.dto.AudioDTO;
 import com.backend.back.dto.ImageDTO;
 import com.backend.back.dto.LogDTO;
 import com.backend.back.dto.UserDTO;
@@ -54,7 +53,7 @@ public interface AdminMapper {
             select count(*) from accesslog a
             \twhere exists
             \t(select 1 from (
-            \t\tselect u.uuid from uuidtouser u 
+            \t\tselect u.uuid from uuidtouser u
             \t\t\twhere u.userid = #{id}
             \t\t) sq
                     where sq.uuid = a.uuid
