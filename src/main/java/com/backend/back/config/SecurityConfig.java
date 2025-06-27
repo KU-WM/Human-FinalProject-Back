@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+// BackEnd로의 직접 접근 방지 / 기능별 권한 설정
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -36,7 +37,7 @@ public class SecurityConfig {
                 .csrf(CsrfConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // ★ 세션 완전 비활성화
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // ★ 세션 완전 비활성화 - JWT 토큰과 충돌
                 )
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/.well-known/**").permitAll()
@@ -46,12 +47,12 @@ public class SecurityConfig {
                 )
                 .formLogin((auth) ->
                         auth
-                                .loginProcessingUrl("/login")
-                                .successHandler(loginSuccessHandler)
-                                .failureUrl("/login?loginerror=1")
+                                .loginProcessingUrl("/login") // 로그인 요청 url
+                                .successHandler(loginSuccessHandler)    // 로그인 성공시 처리 로직
+                                .failureUrl("/login?loginerror=1")  // 로그인 실패시 로직 / react 에서 막아둠
                 )
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling((exceptions) -> exceptions
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class) // 모든 동작 처리 전 JWT 토큰 검증
+                .exceptionHandling((exceptions) -> exceptions   // 예외 발생시 401 에러 리턴 -> react에서 refreshToken 사용
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setContentType("application/json");
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -62,6 +63,7 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // UserDetails의 정보와 사용자 입력 정보를 비교
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
@@ -69,11 +71,13 @@ public class SecurityConfig {
         return builder.build();
     }
 
+    // 비밀번호 암호화
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    // well-known으로 에러 나는거 방지
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers("/.well-known/**");
