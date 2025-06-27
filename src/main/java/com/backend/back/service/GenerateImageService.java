@@ -11,12 +11,12 @@ import java.util.Map;
 
 
 @Service
-public class ImageService {
+public class GenerateImageService {
 
     private final GeminiProperties properties;
     private final WebClient webClient;
 
-    public ImageService(GeminiProperties properties) {
+    public GenerateImageService(GeminiProperties properties) {
         this.properties = properties;
         this.webClient = WebClient.builder()
                 .baseUrl(properties.getApiBaseUrl())
