@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 
+// 유저 정보를 내가 원하는 DB(local mysql)에서 가져 오기 위해 재정의
 @Configuration
 @EnableWebSecurity
 public class CustomUserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
@@ -26,6 +27,7 @@ public class CustomUserDetailsService implements org.springframework.security.co
             throw new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + userId);
         }
 
+        // UserDetail에 유저 정보 저장 / username, password, role(권한)
         return org.springframework.security.core.userdetails.User.builder()
                 .username(member.getUserId())
                 .password(member.getUserPw())
