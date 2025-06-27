@@ -23,9 +23,6 @@ public class AdminController {
     private ImageMapper imageMapper;
 
     @Autowired
-    private AudioMapper audioMapper;
-
-    @Autowired
     private UserMapper userMapper;
 
     @Autowired
