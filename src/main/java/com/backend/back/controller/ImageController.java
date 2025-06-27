@@ -11,7 +11,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -97,58 +96,56 @@ public class ImageController {
 
                 return part.get("text").toString();
             })
-            .flatMap(prompt -> {
-                return generateImageService.generateImage(prompt).map(response -> {
-                    imageDTO.setPrompt(prompt);
-                    JSONObject output = null;
+            .flatMap(prompt -> generateImageService.generateImage(prompt).map(response -> {
+                imageDTO.setPrompt(prompt);
+                JSONObject output = null;
 
-                    try {
-                        output = (JSONObject) parser.parse(response);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                try {
+                    output = (JSONObject) parser.parse(response);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                JSONArray candidates = (JSONArray) output.get("candidates");
+                JSONObject candidate = (JSONObject) candidates.get(0);
+                JSONObject content = (JSONObject) candidate.get("content");
+                JSONArray parts = (JSONArray) content.get("parts");
+                JSONObject part = (JSONObject) parts.get(1);
+                JSONObject inlineData = (JSONObject) part.get("inlineData");
+
+                String uuidFile = UUID.randomUUID() + ".png";
+
+                imageDTO.setSaveName(uuidFile);
+                imageDTO.setSavePath(IMAGE_DIR + uuidFile);
+
+                try {
+                    // Base64 디코딩
+                    byte[] imageBytes = Base64.getDecoder().decode(inlineData.get("data").toString());
+
+                    // 파일로 저장
+                    try (OutputStream stream = new FileOutputStream(IMAGE_DIR + uuidFile)) {
+                        stream.write(imageBytes);
                     }
 
-                    JSONArray candidates = (JSONArray) output.get("candidates");
-                    JSONObject candidate = (JSONObject) candidates.get(0);
-                    JSONObject content = (JSONObject) candidate.get("content");
-                    JSONArray parts = (JSONArray) content.get("parts");
-                    JSONObject part = (JSONObject) parts.get(1);
-                    JSONObject inlineData = (JSONObject) part.get("inlineData");
+                    System.out.println("✅ 이미지 저장 완료: " + IMAGE_DIR + uuidFile);
+                } catch (Exception e) {
+                    System.err.println("❌ 이미지 저장 실패: " + e.getMessage());
+                    e.printStackTrace();
+                }
 
-                    String uuidFile = UUID.randomUUID() + ".png";
+                if(request.getAttribute("isLogin") == "true") {
+                    imageDTO.setCreateBy(Integer.parseInt(request.getAttribute("id").toString()));
+                    imageMapper.saveImage(imageDTO);
+                }
+                else {
+                    imageDTO.setTempUserUUID(request.getAttribute("userId").toString());
+                    imageMapper.saveTempImage(imageDTO);
+                }
 
-                    imageDTO.setSaveName(uuidFile);
-                    imageDTO.setSavePath(IMAGE_DIR + uuidFile);
-
-                    try {
-                        // Base64 디코딩
-                        byte[] imageBytes = Base64.getDecoder().decode(inlineData.get("data").toString());
-
-                        // 파일로 저장
-                        try (OutputStream stream = new FileOutputStream(IMAGE_DIR + uuidFile)) {
-                            stream.write(imageBytes);
-                        }
-
-                        System.out.println("✅ 이미지 저장 완료: " + IMAGE_DIR + uuidFile);
-                    } catch (Exception e) {
-                        System.err.println("❌ 이미지 저장 실패: " + e.getMessage());
-                        e.printStackTrace();
-                    }
-
-                    if(request.getAttribute("isLogin") == "true") {
-                        imageDTO.setCreateBy(Integer.parseInt(request.getAttribute("id").toString()));
-                        imageMapper.saveImage(imageDTO);
-                    }
-                    else {
-                        imageDTO.setTempUserUUID(request.getAttribute("userId").toString());
-                        imageMapper.saveTempImage(imageDTO);
-                    }
-
-                    return Map.of(
-                            "url", uuidFile,
-                            "imageId", imageDTO.getId()
-                    );
-                });
-            });
+                return Map.of(
+                        "url", uuidFile,
+                        "imageId", imageDTO.getId()
+                );
+            }));
     }
 }
