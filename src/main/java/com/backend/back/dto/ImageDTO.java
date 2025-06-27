@@ -12,4 +12,6 @@ public class ImageDTO {
     private String savePath;
     private String saveName;
     private LocalDateTime createAt;
+    private int createBy;
+    private String TempUserUUID;
 }
