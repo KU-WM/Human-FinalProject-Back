@@ -21,9 +21,6 @@ public class GenerateAudioService {
     private final GeminiProperties properties;
     private final WebClient webClient;
 
-    @Autowired
-    private UserMapper userMapper;
-
     public GenerateAudioService(GeminiProperties properties) {
         this.properties = properties;
         this.webClient = WebClient.builder()
