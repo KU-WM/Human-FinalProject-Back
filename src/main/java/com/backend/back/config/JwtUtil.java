@@ -15,7 +15,7 @@ public class JwtUtil {
     private final JwtProperties jwtProperties;
     private Key key;
 
-    private static final long EXPIRATION_MS = 1000 * 30 * 1 * 1; // 1시간
+    private static final long EXPIRATION_MS = 1000 * 60 * 3; // 3분
     private static final long REFRESH_EXPIRATION = 1000 * 60 * 60 * 24 * 7; // 7일
 
     public JwtUtil(JwtProperties jwtProperties) {
@@ -27,10 +27,11 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes());
     }
 
-    public String generateToken(String username, String roles) {
+    public String generateToken(String username, String roles, int id) {
         return Jwts.builder()
                 .setSubject(username)
                 .claim("roles", roles)
+                .claim("id", id)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_MS))
                 .signWith(key, SignatureAlgorithm.HS256)
