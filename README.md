@@ -6,15 +6,29 @@
 ![Mysql](https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 ![Nginx](https://img.shields.io/badge/nginx-009639?style=for-the-badge&logo=nginx&logoColor=white)
 
- 
-## 소개
-<img src="https://github.com/user-attachments/assets/7fa99942-a334-4033-bf96-b919ff1f4d43" />
-Gemini API를 이용하여 간편하게 원하는 이미지를 생성하고 Stable-Audio 1.0 모델을 활용하여 간단한 효과음을 생성할 수 있는 사이트의 Backend 코드 입니다.
+## 📌 목차
+- [📝 소개](#-소개)
+- [🗄️ 데이터 베이스 구조](#-데이터-베이스-구조)
+- [🧩 SpringBoot 구조](#-springBoot-구조)
+- [📁 전체 프로젝트 구성 트리](#-전체-프로젝트-구성-트리)
+- [🧰 사용 기술 스택](#-사용-기술-스택)
+- [📄 License](#-license)
 
-## 제작 목적
-쉽게 접근 가능하고 불편함 없이 간단한 설명만으로 원하는 이미지와 그에 어울리는 효과음을 생성할 수 있는 서비스를 제공하기 위해 제작하였습니다.
+## 📝 소개
+Gemini API와 Stable-Audio 1.0 모델을 활용하여 **사용자가 간단한 텍스트 입력만으로 원하는 이미지와 간단한 효과음을 생성할 수 있는 사이트**를 풀스택으로 개발하고 서비스 하였습니다. 이 레포지토리는 해당 서비스의 FrontEnd 코드 입니다.<br>
+[https://lnpra.com](https://lnpra.com) 에 접속하시면 해당 서비스를 사용하실 수 있습니다.<br>
 
-## 데이터 베이스 구조
+프로젝트의 유지보수를 위하여 개인 프로젝트를 아래 3개의 레포지토리로 분리하여 저장하였습니다.<br>
+
+[FrontEnd]<br>
+https://github.com/KU-WM/Human-FinalProject-Front<br>
+[BackEnd] - 현재 페이지<br>
+https://github.com/KU-WM/Human-FinalProject-Back.git<br>
+[Api Server]<br>
+https://github.com/KU-WM/Human-FinalProject-API.git<br>
+<br>
+
+## 🗄️ 데이터 베이스 구조
 <img width="653" alt="스크린샷 2025-07-01 104459" src="https://github.com/user-attachments/assets/9738a38c-1fc8-42f6-824c-2b4cd3378143" />
 
 |테이블명|기능|
@@ -27,7 +41,7 @@ Gemini API를 이용하여 간편하게 원하는 이미지를 생성하고 Stab
 |Audios|로그인 한 유저가 생성한 오디오를 저장|
 |uuidToUser|유저의 아이디 정보와 구분용 uuid의 매칭정보 저장|
 
-## SpringBoot 구조
+## 🧩 SpringBoot 구조
 
 |MVC 패턴|기능|
 |---|---|
@@ -49,22 +63,21 @@ Gemini API를 이용하여 간편하게 원하는 이미지를 생성하고 Stab
 - 외부 Api 처리방식
     - webClient를 사용하여 모든 요청을 비동기 방식으로 처리
 
-## 전체 프로젝트 구성
-[FrontEnd]<br>
-https://github.com/KU-WM/Human-FinalProject-Front<br>
-[BackEnd]- 현재 페이지<br>
-https://github.com/KU-WM/Human-FinalProject-Back<br>
-[Api Server]<br>
-https://github.com/KU-WM/Human-FinalProject-API<br>
-[내부망 구성]<br>
-nginx - 리버스 프록시 적용<br>
-[외부 서비스 배포]<br>
-cloudflare tunnel - localhost와 외부 도메인 연결<br>
-
-## 개발 과정
+## 🛠 개발 과정
 - 2025.05.26 ~ 2025.06.26 (약 5주) 의 기간동안 진행
 - 오전/오후의 스크럼 회의를 통해 진행사항을 점검하고, 애자일 방법론을 통하여 유연한 개발을 진행
 
-## License
+## 📁 전체 프로젝트 구성 트리
+
+## 🧰 사용 기술 스택
+
+| 분류 | 기술 |
+|------|------|
+| Frontend | React, JavaScript, HTML5, CSS3, Bootstrap |
+| Backend | SpringBoot, FastApi |
+| Infra | Nginx, Cloudflare tunnel |
+| AI 모델 | Gemini API (이미지 생성), Stable Audio 1.0 (효과음 생성) |
+
+## 📄 License
 본 프로젝트의 코드는 비상업적 용도로 자유롭게 사용하실 수 있습니다.
 상업적 이용이나 수정, 재배포 시에는 사전 연락을 부탁드립니다.
