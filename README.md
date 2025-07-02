@@ -17,7 +17,7 @@
 ## 📝 소개
 <img src="https://github.com/user-attachments/assets/85cc6a6d-3c04-41d2-b8ea-1ad42b39f49a" width="775px" />
 
-Gemini API와 Stable-Audio 1.0 모델을 활용하여 **사용자가 간단한 텍스트 입력만으로 원하는 이미지와 간단한 효과음을 생성할 수 있는 사이트**를 풀스택으로 개발하고 서비스 하였습니다. 이 레포지토리는 해당 서비스의 FrontEnd 코드 입니다.<br>
+Gemini API와 Stable-Audio 1.0 모델을 활용하여 **사용자가 간단한 텍스트 입력만으로 원하는 이미지와 간단한 효과음을 생성할 수 있는 사이트**를 풀스택으로 개발하고 서비스 하였습니다. 이 레포지토리는 해당 서비스의 BackEnd 코드 입니다.<br>
 [https://lnpra.com](https://lnpra.com) 에 접속하시면 해당 서비스를 사용하실 수 있습니다.<br>
 
 프로젝트의 유지보수를 위하여 개인 프로젝트를 아래 3개의 레포지토리로 분리하여 저장하였습니다.<br>
@@ -70,6 +70,73 @@ https://github.com/KU-WM/Human-FinalProject-API.git<br>
 - 오전/오후의 스크럼 회의를 통해 진행사항을 점검하고, 애자일 방법론을 통하여 유연한 개발을 진행
 
 ## 📁 전체 프로젝트 구성 트리
+```
+📦Human-FinalProject-Back  
+┣ 📂.gradle  
+┣ 📂.idea  
+┣ 📂build  
+┣ 📂gradle  
+┗ 📂src  
+   ┣ 📂main  
+   ┃ ┣ 📂java  
+   ┃ ┃ ┗ 📂com  
+   ┃ ┃    ┗ 📂backend  
+   ┃ ┃       ┗ 📂back  
+   ┃ ┃          ┣ 📜BackApplication.java  
+   ┃ ┃          ┣ 📂config  - Spring Security 설정 / Cors 방지 설정
+   ┃ ┃          ┃ ┣ 📜CustomUserDetailsService.java  
+   ┃ ┃          ┃ ┣ 📜JwtAuthenticationFilter.java  
+   ┃ ┃          ┃ ┣ 📜JwtUtil.java  
+   ┃ ┃          ┃ ┣ 📜LoginSuccessHandler.java  
+   ┃ ┃          ┃ ┣ 📜SecurityConfig.java  
+   ┃ ┃          ┃ ┗ 📜WebConfig.java  
+   ┃ ┃          ┣ 📂controller  - 각종 기능들 구현
+   ┃ ┃          ┃ ┣ 📜AdminController.java  
+   ┃ ┃          ┃ ┣ 📜AudioController.java  
+   ┃ ┃          ┃ ┣ 📜FileController.java  
+   ┃ ┃          ┃ ┣ 📜ImageController.java  
+   ┃ ┃          ┃ ┣ 📜LogController.java  
+   ┃ ┃          ┃ ┣ 📜PageController.java  
+   ┃ ┃          ┃ ┣ 📜RefreshTokenController.java  
+   ┃ ┃          ┃ ┣ 📜StatisticController.java  
+   ┃ ┃          ┃ ┗ 📜UserController.java  
+   ┃ ┃          ┣ 📂dto  - DB과의 통신을 위한 객체 정의
+   ┃ ┃          ┃ ┣ 📜AccessLogDTO.java  
+   ┃ ┃          ┃ ┣ 📜AudioDTO.java  
+   ┃ ┃          ┃ ┣ 📜FilePath.java  
+   ┃ ┃          ┃ ┣ 📜ImageDTO.java  
+   ┃ ┃          ┃ ┣ 📜LogDTO.java  
+   ┃ ┃          ┃ ┣ 📜PageDTO.java  
+   ┃ ┃          ┃ ┣ 📜UserDTO.java  
+   ┃ ┃          ┃ ┣ 📜UserGrade.java  
+   ┃ ┃          ┃ ┗ 📜UuidToUserDTO.java  
+   ┃ ┃          ┣ 📂mapper  - DB와의 통신 함수 정의
+   ┃ ┃          ┃ ┣ 📜AdminMapper.java  
+   ┃ ┃          ┃ ┣ 📜AudioMapper.java  
+   ┃ ┃          ┃ ┣ 📜ImageMapper.java  
+   ┃ ┃          ┃ ┣ 📜StatisticMapper.java  
+   ┃ ┃          ┃ ┗ 📜UserMapper.java  
+   ┃ ┃          ┣ 📂properties  - application.properties의 변수 불러오기
+   ┃ ┃          ┃ ┣ 📜GeminiProperties.java  
+   ┃ ┃          ┃ ┣ 📜GemmaProperties.java  
+   ┃ ┃          ┃ ┗ 📜JwtProperties.java  
+   ┃ ┃          ┣ 📂repository  - Logs와 같이 대량 입출력 batch로 처리
+   ┃ ┃          ┃ ┗ 📜AccessLogsRepository.java  
+   ┃ ┃          ┗ 📂service  - 사용자 요청시 실질적으로 처리하는 로직
+   ┃ ┃             ┣ 📜DeleteFileService.java  
+   ┃ ┃             ┣ 📜GenerateAudioService.java  
+   ┃ ┃             ┣ 📜GenerateImageService.java  
+   ┃ ┃             ┣ 📜LoggingService.java  
+   ┃ ┃             ┗ 📜Temp2UserService.java  
+   ┃ ┗ 📂resources  
+   ┃    ┗ 📜application.properties  
+   ┗ 📂test  
+     ┗ 📂java  
+       ┗ 📂com  
+         ┗ 📂backend  
+           ┗ 📂back  
+             ┗ 📜BackApplicationTests.java  
+```
 
 ## 🧰 사용 기술 스택
 
