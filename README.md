@@ -41,7 +41,7 @@ https://github.com/KU-WM/Human-FinalProject-API.git<br>
 |Users|유저 정보를 저장|
 |Images|로그인 한 유저가 생성한 이미지를 저장|
 |Audios|로그인 한 유저가 생성한 오디오를 저장|
-|uuidToUser|유저의 아이디 정보와 구분용 uuid의 매칭정보 저장|
+|uuidToUser|유저의 아이디 정보와 구분용 uuid의 매칭 정보 저장|
 
 ## 🧩 SpringBoot 구조
 
