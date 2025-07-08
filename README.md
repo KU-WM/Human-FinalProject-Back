@@ -25,7 +25,6 @@ Gemini API와 Stable-Audio 1.0 모델을 활용하여 **사용자가 간단한 �
 [FrontEnd](https://github.com/KU-WM/Human-FinalProject-Front)<br>
 [BackEnd](https://github.com/KU-WM/Human-FinalProject-Back.git) - 현재 페이지<br>
 [Api Server](https://github.com/KU-WM/Human-FinalProject-API.git)<br>
-<br>
 
 ## 🗄️ 데이터 베이스 구조
 <img width="653" alt="스크린샷 2025-07-01 104459" src="https://github.com/user-attachments/assets/9738a38c-1fc8-42f6-824c-2b4cd3378143" />
